@@ -43,6 +43,14 @@ cmake_minimum_required(VERSION 3.1)
 ## set build parameter
 #######################################################
 SET (VORTEX_TARGET_PLATFORM win_x86-64 CACHE STRING "set the build target")
+SET (USE_TEST no CACHE STRING "use regressiontest")
+#######################################################
+## Vortex - Version (used in subdirectory cMake)
+## You can set this attribute calling cmake with
+## an aditional option for example: 
+## CMake ..... -DVORTEXVER=1.1.17x
+#######################################################
+SET (VORTEXVER 1.1.17 CACHE STRING "set Vortex version")
 
 #######################################################
 ## set version parameter
@@ -63,17 +71,12 @@ if (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-64)
 
   set(PROJECT linux_x86-64)
 
-  set(IS64BIT true)
   set(CPACK_SET_DESTDIR ON)
   set(CPACK_RESOURCE_FILE_LICENSE ../COPYING)
   
   include (CPack)
 
-  set (CMAKE_FIND_LIBRARY_PREFIXES lib)
-  set (CMAKE_FIND_LIBRARY_SUFFIXES .so)
-
-  set (LIBSSL_LOCATION /usr/lib/x86_64-linux-gnu)
-  set (LIBAXL_LOCATION /home/akristmann/libaxl/build/lib)
+  LINK_DIRECTORIES("../libaxl/build/lib")
 
   set (PLATFORM_FOUND true)  
 
@@ -89,21 +92,23 @@ if (${PLATFORM_FOUND} STREQUAL true)
   #######################################################
   PROJECT( vortex )
   find_package (Threads)
-  find_library (LIBAXL NAMES axl PATHS ${LIBAXL_LOCATION} NO_DEFAULT_PATH)
-  find_library (LIBSSL NAMES ssl PATHS ${LIBSSL_LOCATION} NO_DEFAULT_PATH)
-  MESSAGE (STATUS "CMAKE_LIBRARY_PATH  ${LIBSSL_LOCATION}")
 
   #######################################################
   ## Source and destination directories:
   #######################################################
   ADD_SUBDIRECTORY(src)
   ADD_SUBDIRECTORY(tls)
-  ADD_SUBDIRECTORY(test)
+  #############################
+  # With regressiontest:
+  if (${USE_TEST} STREQUAL yes)
+    ADD_SUBDIRECTORY(test)
+  endif (${USE_TEST} STREQUAL yes)
  
 else (${PLATFORM_FOUND} STREQUAL true)
-  message( SEND_ERROR "Unknown target platform / please check \"AXL_TARGET_PLATFORM\"" )
+  message( SEND_ERROR "Unknown target platform / please check \"VORTEX_TARGET_PLATFORM\"" )
 endif (${PLATFORM_FOUND} STREQUAL true)
 
+message( SEND_INFO " ${AXLVER} / ${VORTEXVER}" )
 
 
 

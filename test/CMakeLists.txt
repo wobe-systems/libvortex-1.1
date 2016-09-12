@@ -13,13 +13,13 @@ source_group("Sourcefiles" FILES ${VORTEX_SOURCES})
 if (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-64)
   
   set(COMPILE_ARGS -Wall -Werror -g -pthread -Wstrict-prototypes -fstack-protector-all -Wstack-protector)
-  set(PREPROCESSOR_DEF -DHAVE_CONFIG_H -D__axl_disable_broken_bool_def__ -DVERSION=\"1.1.17.b2333\" -DENABLE_VORTEX_LOG -DENABLE_TLS_SUPPORT) 
+  set(PREPROCESSOR_DEF -DHAVE_CONFIG_H -DVERSION=\"${VORTEXVER}\" -DENABLE_TLS_SUPPORT) 
 
   set(TARGET_TEST vortex-regression-client)
   set(IS64BIT true)
   set (EXECUTABLE_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin)
 
-endif (${AXL_TARGET_PLATFORM} STREQUAL linux_x86-64)
+endif (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-64)
 
 INCLUDE_DIRECTORIES (.)
 INCLUDE_DIRECTORIES (..)
