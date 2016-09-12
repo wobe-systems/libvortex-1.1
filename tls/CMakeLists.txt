@@ -41,7 +41,72 @@ if (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-64)
 endif (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-64)
 
 #######################################################
+## LINUX 32 bit
+#######################################################
 
+if (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-32)
+  
+  set(COMPILE_ARGS     -Wall -Werror -g -O2 -Wstrict-prototypes -fstack-protector-all -Wstack-protector -pthread -fPIC)
+  set(PREPROCESSOR_DEF -DHAVE_CONFIG_H -DVERSION=\"${VORTEXVER}\" -DPACKAGE_TOP_DIR=\"..\" -D__COMPILING_VORTEX__ )
+  set(CMAKE_SHARED_LINKER_FLAGS -O2)
+  set(VORTEX_LOCAL_TLS vortex-tls-1.1)
+  set(VORTEX_LOCAL_TLS_STATIC vortex-tls-1.1_static)
+  set(VORTEX_LIB_NAME_TLS ${VORTEX_LOCAL_TLS} PARENT_SCOPE)
+  set(BUILD_STATIC false)
+
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/static)
+
+  set(LIBAXL libaxl.so)
+  set(LIBSSL libssl.so)
+  set(LIBCRYPTO libcrypto.so)
+  set(LIBVORTEX libvortex-1.1.so)
+
+
+
+  MESSAGE (STATUS "CMAKE PROJECT_SOURCE_DIR    ${CMAKE_CURRENT_SOURCE_DIR}")
+  MESSAGE (STATUS "CMAKE_BINARY_DIR:           ${CMAKE_BINARY_DIR}" )
+  MESSAGE (STATUS "LIBRARY_OUTPUT_DIRECTORY:   ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+
+endif (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-32)
+
+#######################################################
+## LINUX ARM 32
+#######################################################
+
+if (${VORTEX_TARGET_PLATFORM} STREQUAL linux_arm32)
+  
+  set(COMPILE_ARGS     -Wall -Werror -g -O2 -Wstrict-prototypes -fstack-protector-all -Wstack-protector -pthread -fPIC)
+  set(PREPROCESSOR_DEF -DHAVE_CONFIG_H -DVERSION=\"${VORTEXVER}\" -DPACKAGE_TOP_DIR=\"..\" -D__COMPILING_VORTEX__ )
+  set(CMAKE_SHARED_LINKER_FLAGS -O2)
+  set(VORTEX_LOCAL_TLS vortex-tls-1.1)
+  set(VORTEX_LOCAL_TLS_STATIC vortex-tls-1.1_static)
+  set(VORTEX_LIB_NAME_TLS ${VORTEX_LOCAL_TLS} PARENT_SCOPE)
+  set(BUILD_STATIC false)
+
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/static)
+
+  set(LIBAXL libaxl.so)
+  set(LIBSSL libssl.so)
+  set(LIBCRYPTO libcrypto.so)
+  set(LIBVORTEX libvortex-1.1.so)
+
+
+
+  MESSAGE (STATUS "CMAKE PROJECT_SOURCE_DIR    ${CMAKE_CURRENT_SOURCE_DIR}")
+  MESSAGE (STATUS "CMAKE_BINARY_DIR:           ${CMAKE_BINARY_DIR}" )
+  MESSAGE (STATUS "LIBRARY_OUTPUT_DIRECTORY:   ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+
+endif (${VORTEX_TARGET_PLATFORM} STREQUAL linux_arm32)
+
+#######################################################
+
+#######################################################
+## Include- directories:
+if (SSL_INCLUDE_DIR)
+  INCLUDE_DIRECTORIES (${SSL_INCLUDE_DIR})
+endif()
 INCLUDE_DIRECTORIES (.)
 INCLUDE_DIRECTORIES (..)
 INCLUDE_DIRECTORIES (../src)

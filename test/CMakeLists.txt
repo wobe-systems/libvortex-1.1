@@ -21,6 +21,40 @@ if (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-64)
 
 endif (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-64)
 
+#######################################################
+## LINUX 32 bit
+#######################################################
+
+#gcc -DHAVE_CONFIG_H -I. -I.. -I../src -I../tunnel -I../pull -I../alive -I../xml-rpc -I../http -I../external  -I/usr/include/axl  -pthread -I/include -Wstrict-prototypes -Wall -Werror -g -fstack-#protector-all -Wstack-protector -D__axl_disable_broken_bool_def__ -DVERSION=\""1.1.17.b2333"\" -I../src -DVORTEX_HAVE_POLL=1 -DVORTEX_HAVE_EPOLL=1 -DENABLE_VORTEX_LOG -DENABLE_TUNNEL_SUPPORT -#DENABLE_PULL_SUPPORT  -DENABLE_XML_RPC_SUPPORT -DENABLE_SASL_SUPPORT -I../sasl -DENABLE_HTTP_SUPPORT -DENABLE_TLS_SUPPORT -I../tls    -I/usr/include/python2.7 -I/usr/include/x86_64-linux-gnu/#python2.7  -g -O2 -MT vortex-regression-client.o -MD -MP -MF .deps/vortex-regression-client.Tpo -c -o vortex-regression-client.o vortex-regression-client.c
+
+if (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-32)
+  
+  set(COMPILE_ARGS -Wall -Werror -g -pthread -Wstrict-prototypes -fstack-protector-all -Wstack-protector)
+  set(PREPROCESSOR_DEF -DHAVE_CONFIG_H -DVERSION=\"${VORTEXVER}\" -DENABLE_TLS_SUPPORT) 
+
+  set(TARGET_TEST vortex-regression-client)
+  set(IS64BIT true)
+  set (EXECUTABLE_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin)
+
+endif (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-32)
+
+#######################################################
+## LINUX ARM 32
+#######################################################
+
+#gcc -DHAVE_CONFIG_H -I. -I.. -I../src -I../tunnel -I../pull -I../alive -I../xml-rpc -I../http -I../external  -I/usr/include/axl  -pthread -I/include -Wstrict-prototypes -Wall -Werror -g -fstack-#protector-all -Wstack-protector -D__axl_disable_broken_bool_def__ -DVERSION=\""1.1.17.b2333"\" -I../src -DVORTEX_HAVE_POLL=1 -DVORTEX_HAVE_EPOLL=1 -DENABLE_VORTEX_LOG -DENABLE_TUNNEL_SUPPORT -#DENABLE_PULL_SUPPORT  -DENABLE_XML_RPC_SUPPORT -DENABLE_SASL_SUPPORT -I../sasl -DENABLE_HTTP_SUPPORT -DENABLE_TLS_SUPPORT -I../tls    -I/usr/include/python2.7 -I/usr/include/x86_64-linux-gnu/#python2.7  -g -O2 -MT vortex-regression-client.o -MD -MP -MF .deps/vortex-regression-client.Tpo -c -o vortex-regression-client.o vortex-regression-client.c
+
+if (${VORTEX_TARGET_PLATFORM} STREQUAL linux_arm32)
+  
+  set(COMPILE_ARGS -Wall -Werror -g -pthread -Wstrict-prototypes -fstack-protector-all -Wstack-protector)
+  set(PREPROCESSOR_DEF -DHAVE_CONFIG_H -DVERSION=\"${VORTEXVER}\" -DENABLE_TLS_SUPPORT) 
+
+  set(TARGET_TEST vortex-regression-client)
+  set(IS64BIT true)
+  set (EXECUTABLE_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin)
+
+endif (${VORTEX_TARGET_PLATFORM} STREQUAL linux_arm32)
+
 INCLUDE_DIRECTORIES (.)
 INCLUDE_DIRECTORIES (..)
 INCLUDE_DIRECTORIES (../src)

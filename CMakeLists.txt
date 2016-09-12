@@ -74,18 +74,84 @@ if (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-64)
   set(CPACK_SET_DESTDIR ON)
   set(CPACK_RESOURCE_FILE_LICENSE ../COPYING)
   
+  
+  set (CMAKE_FIND_LIBRARY_PREFIXES lib)
+  set (CMAKE_FIND_LIBRARY_SUFFIXES .so)
+
   include (CPack)
 
   LINK_DIRECTORIES("../libaxl/build/lib")
+  LINK_DIRECTORIES("./build/lib")
 
   set (PLATFORM_FOUND true)  
 
 endif (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-64)
+
+#######################################################
+## LINUX 32 bit
+#######################################################
+if (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-32)
+
+  set(PROJECT linux_x86-32)
+
+  set(CPACK_SET_DESTDIR ON)
+  set(CPACK_RESOURCE_FILE_LICENSE ../COPYING)
+  
+  
+  set (CMAKE_FIND_LIBRARY_PREFIXES lib)
+  set (CMAKE_FIND_LIBRARY_SUFFIXES .so)
+
+  include (CPack)
+
+  LINK_DIRECTORIES("../libaxl/build/lib")
+  LINK_DIRECTORIES("./build/lib")
+
+  set (PLATFORM_FOUND true)  
+
+endif (${VORTEX_TARGET_PLATFORM} STREQUAL linux_x86-32)
+
+#######################################################
+## LINUX ARM 32
+#######################################################
+if (${VORTEX_TARGET_PLATFORM} STREQUAL linux_arm32)
+
+  set(PROJECT linux_arm32)
+
+  set(CPACK_SET_DESTDIR ON)
+  set(CPACK_RESOURCE_FILE_LICENSE ../COPYING)
+  
+  set (CMAKE_FIND_LIBRARY_PREFIXES lib)
+  set (CMAKE_FIND_LIBRARY_SUFFIXES .so)
+
+  include (CPack)
+
+  LINK_DIRECTORIES("../libaxl/build/lib")
+  LINK_DIRECTORIES("./build/lib")
+
+  set (PLATFORM_FOUND true)  
+
+endif (${VORTEX_TARGET_PLATFORM} STREQUAL linux_arm32)
 #######################################################
 
 if (${PLATFORM_FOUND} STREQUAL true)
 
   MESSAGE(PLATFORM FOUND)
+
+  #######################################################
+  ## SSL autodetection:
+  #######################################################
+  find_library(SSL_LIB_PATH NAMES ssl)
+  if (SSL_LIB_PATH AND EXISTS "${SSL_LIB_PATH}")
+    get_filename_component(SSL_LIB_PATH ${SSL_LIB_PATH} DIRECTORY)
+  endif()
+  find_path(SSL_INCLUDE_DIR openssl/x509v3.h)
+  if (SSL_INCLUDE_DIR AND EXISTS "${SSL_INCLUDE_DIR}/openssl/x509v3.h")
+    set(SSL_INCLUDE_DIR ${SSL_INCLUDE_DIR})
+  endif()
+  message("-- ---------------------------------------------------------------")
+  message("-- Automatic path detection:")
+  message(STATUS "SSL_LIB_PATH:       " ${SSL_LIB_PATH})
+  message(STATUS "SSL_INCLUDE_DIR:    " ${SSL_INCLUDE_DIR})
 
   #######################################################
   ## Project / Solution- File:
@@ -108,7 +174,6 @@ else (${PLATFORM_FOUND} STREQUAL true)
   message( SEND_ERROR "Unknown target platform / please check \"VORTEX_TARGET_PLATFORM\"" )
 endif (${PLATFORM_FOUND} STREQUAL true)
 
-message( SEND_INFO " ${AXLVER} / ${VORTEXVER}" )
 
 
 
