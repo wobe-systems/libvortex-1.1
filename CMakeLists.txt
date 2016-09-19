@@ -51,6 +51,7 @@ SET (USE_TEST no CACHE STRING "use regressiontest")
 ## CMake ..... -DVORTEXVER=1.1.17x
 #######################################################
 SET (VORTEXVER 1.1.17 CACHE STRING "set Vortex version")
+SET (SSL_INST_PATH / CACHE STRING "ssl installation path")
 
 #######################################################
 ## set version parameter
@@ -63,6 +64,48 @@ set (CPACK_PACKAGE_VERSION_MAJOR "${VORTEX_MAJOR_VERSION}")
 set (CPACK_PACKAGE_VERSION_MINOR "${VORTEX_MINOR_VERSION}")
 set (CPACK_PACKAGE_VERSION_PATCH "${VORTEX_MICRO_VERSION}")
 set (PLATFORM_FOUND false)
+
+#######################################################
+## Windows 64 bit
+#######################################################
+if (${VORTEX_TARGET_PLATFORM} STREQUAL win_x86-64)
+  set(PROJECT win_x86-64)
+
+  set(CPACK_SET_DESTDIR ON)
+  set(CPACK_RESOURCE_FILE_LICENSE ../COPYING)
+  
+  set (CMAKE_FIND_LIBRARY_PREFIXES lib)
+  set (CMAKE_FIND_LIBRARY_SUFFIXES .dll)
+
+  include (CPack)
+
+  LINK_DIRECTORIES("../libaxl/build/win_x86-64/axl/Release")
+  LINK_DIRECTORIES("${SSL_INST_PATH}/release/win64")
+  
+  set (PLATFORM_FOUND true)  
+
+endif (${VORTEX_TARGET_PLATFORM} STREQUAL win_x86-64)
+
+#######################################################
+## Windows 32 bit
+#######################################################
+if (${VORTEX_TARGET_PLATFORM} STREQUAL win_x86-32)
+  set(PROJECT win_x86-32)
+
+  set(CPACK_SET_DESTDIR ON)
+  set(CPACK_RESOURCE_FILE_LICENSE ../COPYING)
+  
+  set (CMAKE_FIND_LIBRARY_PREFIXES lib)
+  set (CMAKE_FIND_LIBRARY_SUFFIXES .dll)
+
+  include (CPack)
+
+  LINK_DIRECTORIES("../libaxl/build/win_x86-32/axl/Release")
+  LINK_DIRECTORIES("${SSL_INST_PATH}/release/win32")
+
+  set (PLATFORM_FOUND true)  
+
+endif (${VORTEX_TARGET_PLATFORM} STREQUAL win_x86-32)
 
 #######################################################
 ## LINUX 64 bit
@@ -162,8 +205,8 @@ if (${PLATFORM_FOUND} STREQUAL true)
   #######################################################
   ## Source and destination directories:
   #######################################################
-  ADD_SUBDIRECTORY(src)
-  ADD_SUBDIRECTORY(tls)
+  ADD_SUBDIRECTORY(src ${PROJECT}/src)
+  ADD_SUBDIRECTORY(tls ${PROJECT}/tls)
   #############################
   # With regressiontest:
   if (${USE_TEST} STREQUAL yes)
