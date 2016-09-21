@@ -175,6 +175,54 @@ if (${VORTEX_TARGET_PLATFORM} STREQUAL linux_arm32)
 
 endif (${VORTEX_TARGET_PLATFORM} STREQUAL linux_arm32)
 #######################################################
+## FreeBSD 32
+#######################################################
+
+if (${VORTEX_TARGET_PLATFORM} STREQUAL freeBSD_x86-32)
+
+  set(PROJECT freeBSD_x86-32)
+
+  set(CPACK_SET_DESTDIR ON)
+  set(CPACK_RESOURCE_FILE_LICENSE ../COPYING)
+  
+  
+  set (CMAKE_FIND_LIBRARY_PREFIXES lib)
+  set (CMAKE_FIND_LIBRARY_SUFFIXES .so)
+
+  include (CPack)
+
+  LINK_DIRECTORIES("../libaxl/build/lib")
+  LINK_DIRECTORIES("./build/lib")
+
+  set (PLATFORM_FOUND true)  
+ 
+endif (${VORTEX_TARGET_PLATFORM} STREQUAL freeBSD_x86-32)
+
+#######################################################
+## FreeBSD 64
+#######################################################
+
+if (${VORTEX_TARGET_PLATFORM} STREQUAL freeBSD_x86-64)
+
+  set(PROJECT freeBSD_x86-64)
+
+  set(CPACK_SET_DESTDIR ON)
+  set(CPACK_RESOURCE_FILE_LICENSE ../COPYING)
+  
+  
+  set (CMAKE_FIND_LIBRARY_PREFIXES lib)
+  set (CMAKE_FIND_LIBRARY_SUFFIXES .so)
+
+  include (CPack)
+
+  LINK_DIRECTORIES("../libaxl/build/lib")
+  LINK_DIRECTORIES("./build/lib")
+
+  set (PLATFORM_FOUND true)  
+ 
+endif (${VORTEX_TARGET_PLATFORM} STREQUAL freeBSD_x86-64)
+
+#######################################################
 
 if (${PLATFORM_FOUND} STREQUAL true)
 
