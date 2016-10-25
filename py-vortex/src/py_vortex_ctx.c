@@ -145,14 +145,22 @@ void        py_vortex_ctx_record_start_handler (VortexCtx * ctx, PyObject * hand
 
 void        py_vortex_ctx_record_close_handler (VortexCtx * ctx, PyObject * handler)
 {
-	VortexHash * hash = vortex_ctx_get_data (ctx, PY_VORTEX_WATCHER_HANDLER_HASH);
+	VortexHash * hash;
+
+	/* allow other threads to enter into the python space */
+	Py_BEGIN_ALLOW_THREADS
 
 	/* no hash no record */
-	if (hash == NULL)
-		return;
+	hash = vortex_ctx_get_data (ctx, PY_VORTEX_WATCHER_HANDLER_HASH);
 
-	/* delete handler */
-	vortex_hash_remove (hash, handler);
+	if (hash) {
+		/* delete handler */
+		vortex_hash_remove (hash, handler);
+	} /* end if */
+
+	/* restore thread state */
+	Py_END_ALLOW_THREADS
+
 	return;
 }
 
@@ -230,12 +238,14 @@ void        py_vortex_ctx_start_handler_watcher (VortexCtx * ctx, int watching_p
 
 	/* init hash */
 	hash = vortex_hash_new (axl_hash_int, axl_hash_equal_int);
+	
+	/* set data full */
 	vortex_ctx_set_data_full (ctx, PY_VORTEX_WATCHER_HANDLER_HASH, hash, NULL, (axlDestroyFunc) vortex_hash_unref);
 
 	/* record notifier if defined */
 	vortex_ctx_set_data (ctx, PY_VORTEX_WATCHER_NOTIFIER, notifier);
 	vortex_ctx_set_data (ctx, PY_VORTEX_WATCHER_NOTIFIER_DATA, notifier_data);
-
+		
 	/* start handler */
 	vortex_thread_pool_new_event (ctx, (watching_period + 1) * 1000000, 
 				      py_vortex_ctx_handler_watcher, INT_TO_PTR (watching_period), NULL);
@@ -285,6 +295,8 @@ axl_bool        py_vortex_ctx_log_too_long_notifications (VortexCtx * ctx, int w
 	time_t       rawtime;
 	const char * value;
 
+	/*** GIL ALREADY ACQUIRED REACHED THIS POINT ***/
+
 	/* open the file provided by the user */
 	fd = open (file, O_CREAT | O_APPEND | O_WRONLY, 0600);
 	if (fd < 0) {
@@ -307,7 +319,7 @@ axl_bool        py_vortex_ctx_log_too_long_notifications (VortexCtx * ctx, int w
 	vortex_ctx_set_data_full (ctx, file, (axlPointer) file, NULL, axl_free);
 
 	/* start handler watcher here */
-	py_vortex_ctx_start_handler_watcher (ctx, watching_period, py_vortex_ctx_too_long_notifier_to_file, (axlPointer) file);	
+	py_vortex_ctx_start_handler_watcher (ctx, watching_period, py_vortex_ctx_too_long_notifier_to_file, (axlPointer) file);
 
 	return axl_true;
 }
@@ -390,9 +402,16 @@ PyObject * py_vortex_ctx_exit (PyVortexCtx* self)
 {
 	if (self->exit_pending) {
 		py_vortex_log (PY_VORTEX_DEBUG, "finishing vortex.Ctx %p (self->ctx: %p)", self, self->ctx);
+
+		/* allow threads */
+		Py_BEGIN_ALLOW_THREADS
+		
 		/* call to finish context: do not dealloc ->ctx, this is
 		   already done by the type deallocator */
 		vortex_exit_ctx (self->ctx, axl_false);
+
+		/* end threads */
+		Py_END_ALLOW_THREADS
 
 		/* flag as exit done */
 		self->exit_pending = axl_false;
@@ -589,13 +608,21 @@ axl_bool py_vortex_ctx_bridge_event (VortexCtx * ctx, axlPointer user_data, axlP
 
 	remove_event:
 
+		/* allow threads */
+		Py_BEGIN_ALLOW_THREADS
+
 		/* call to remove event before returning */
 		vortex_thread_pool_remove_event (ctx, data->id);
+
+		/* end threads: this declaration has to be here so
+		   next vortex_ctx_set_data runs with GIL acquired */
+		Py_END_ALLOW_THREADS
 
 		/* we have to remove the event, finish all data */
 		str = axl_strdup_printf ("py:vo:event:%d", data->id);
 		vortex_ctx_set_data (ctx, str, NULL);
 		axl_free (str);
+
 	} /* end if */
 
 	/* release the GIL */
@@ -899,5 +926,4 @@ void init_vortex_ctx (PyObject * module)
 
 	return;
 }
-
 

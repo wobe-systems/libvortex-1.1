@@ -135,6 +135,7 @@
 #define vortex_is_disconnected ((errno == WSAESHUTDOWN) || (errno == WSAECONNABORTED) || (errno == WSAECONNRESET))
 #define VORTEX_FILE_SEPARATOR "\\"
 #define inet_ntop vortex_win32_inet_ntop
+#define EADDRNOTAVAIL 125
 
 /* no link support windows */
 #define S_ISLNK(m) (0)
@@ -405,6 +406,10 @@ void     vortex_log_acquire_mutex            (VortexCtx * ctx,
 
 void     vortex_log_set_handler      (VortexCtx         * ctx,
 				      VortexLogHandler    handler);
+
+void     vortex_log_set_handler_full (VortexCtx             * ctx,
+				      VortexLogHandlerFull    handler,
+				      axlPointer              user_data);
 
 void     vortex_log_set_prepare_log  (VortexCtx         * ctx,
 				      axl_bool            prepare_string);

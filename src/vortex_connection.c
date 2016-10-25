@@ -2943,9 +2943,9 @@ int                 vortex_connection_ref_count              (VortexConnection *
 		return -1;
 
 	/* return the reference count */
-	vortex_mutex_lock     (&(connection->ref_mutex));
+	/* vortex_mutex_lock     (&(connection->ref_mutex)); */
 	result = connection->ref_count;
-	vortex_mutex_unlock     (&(connection->ref_mutex));
+	/* vortex_mutex_unlock     (&(connection->ref_mutex)); */
 	return result;
 }
 
@@ -3314,6 +3314,7 @@ void                __vortex_connection_shutdown_and_record_error (VortexConnect
 {
 	va_list     args;
 	char      * _msg;
+	char      * aux;
 #if defined(ENABLE_VORTEX_LOG)
 	VortexCtx * ctx;
 #endif
@@ -3332,6 +3333,13 @@ void                __vortex_connection_shutdown_and_record_error (VortexConnect
 		va_start (args, message);
 		_msg = axl_strdup_printfv (message, args);
 		va_end (args);
+
+		aux  = _msg;
+		_msg = axl_strdup_printf ("%s (socket=%d, conn-id=%d, errno=%d, remote-ip=%s, serverName=%s, status=%d : %s)", 
+					  aux, conn->session, conn->id, errno, 
+					  vortex_connection_get_host_ip (conn), vortex_connection_get_server_name (conn), 
+					  status, message);
+		axl_free (aux);
 
 		vortex_log (VORTEX_LEVEL_CRITICAL, _msg);
 		
@@ -4622,6 +4630,13 @@ const char        * vortex_connection_get_host_ip            (VortexConnection *
 	/* unix flavors */
 	socklen_t          sin_size     = sizeof (sin);
 #endif
+#if defined(ENABLE_VORTEX_LOG)
+	VortexCtx        * ctx;
+
+	/* setup context */
+	ctx = connection->ctx;
+#endif
+
 	/* check input parameters */
 	if (connection == NULL)
 		return NULL;
